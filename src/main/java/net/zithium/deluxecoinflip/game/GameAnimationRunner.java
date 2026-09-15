@@ -60,16 +60,16 @@ public final class GameAnimationRunner {
         if (winnerPlayer != null) {
             scheduler.runAtEntity(winnerPlayer, task -> winnerGui.open(winnerPlayer));
             plugin.getInventoryManager().getCoinflipGUI().startAnimation(
-                  winnerGui, winnerHead, loserHead, winner,
-                  loser, game, winnerPlayer, random, true
+                    winnerGui, winnerHead, loserHead, winner,
+                    loser, game, winnerPlayer, random, true
             );
         }
 
         if (loserPlayer != null) {
             scheduler.runAtEntity(loserPlayer, task -> loserGui.open(loserPlayer));
             plugin.getInventoryManager().getCoinflipGUI().startAnimation(
-                  loserGui, winnerHead, loserHead, winner,
-                  loser, game, loserPlayer, random, false
+                    loserGui, winnerHead, loserHead, winner,
+                    loser, game, loserPlayer, random, false
             );
         }
     }
