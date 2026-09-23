@@ -28,6 +28,7 @@ public class CoinflipGame implements Cloneable {
 
     private transient volatile boolean activeGame = false;
     private transient volatile UUID opponent;
+    private boolean vsBot = false;
 
     public CoinflipGame(UUID uuid, String provider, long amount) {
         this.scheduler = DeluxeCoinflipPlugin.scheduler();
@@ -104,5 +105,13 @@ public class CoinflipGame implements Cloneable {
 
     public void attachOpponent(@NotNull UUID opponent) {
         this.opponent = opponent;
+    }
+
+    public boolean isVsBot() {
+        return vsBot;
+    }
+
+    public void setVsBot(boolean vsBot) {
+        this.vsBot = vsBot;
     }
 }

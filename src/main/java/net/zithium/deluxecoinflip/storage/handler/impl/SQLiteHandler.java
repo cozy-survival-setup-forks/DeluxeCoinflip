@@ -64,6 +64,7 @@ public class SQLiteHandler implements StorageHandler {
         }
 
         createTable();
+        addBotColumnsIfMissing();
         return true;
     }
 
@@ -75,7 +76,7 @@ public class SQLiteHandler implements StorageHandler {
 
         try (Connection c = getConnection()) {
             c.setAutoCommit(false);
-            String sql = "REPLACE INTO players (uuid, wins, losses, profit, total_loss, total_gambled, broadcasts) VALUES (?, ?, ?, ?, ?, ?, ?);";
+            String sql = "REPLACE INTO players (uuid, wins, losses, profit, total_loss, total_gambled, broadcasts, bot_wins, bot_losses) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
             try (PreparedStatement preparedStatement = c.prepareStatement(sql)) {
                 for (PlayerData player : new ArrayList<>(playerDataMap.values())) {
                     preparedStatement.setString(1, player.getUUID().toString());
@@ -85,6 +86,8 @@ public class SQLiteHandler implements StorageHandler {
                     preparedStatement.setLong(5, player.getTotalLosses());
                     preparedStatement.setLong(6, player.getTotalGambled());
                     preparedStatement.setBoolean(7, player.isDisplayBroadcastMessages());
+                    preparedStatement.setInt(8, player.getBotWins());
+                    preparedStatement.setInt(9, player.getBotLosses());
                     preparedStatement.addBatch();
                 }
 
@@ -118,7 +121,9 @@ public class SQLiteHandler implements StorageHandler {
                     "profit BIGINT," +
                     "total_loss BIGINT," +
                     "total_gambled BIGINT," +
-                    "broadcasts BOOLEAN);";
+                    "broadcasts BOOLEAN," +
+                    "bot_wins INTEGER DEFAULT 0," +
+                    "bot_losses INTEGER DEFAULT 0);";
             statement.execute(createPlayersTable);
 
             String createGamesTable = "CREATE TABLE IF NOT EXISTS games (" +
@@ -131,9 +136,26 @@ public class SQLiteHandler implements StorageHandler {
         }
     }
 
+    /** Adds bot_wins/bot_losses for installs upgrading from before Play with Bot existed. Runs after
+     * createTable(), so the table is guaranteed to already exist by the time this checks for the columns. */
+    private void addBotColumnsIfMissing() {
+        try (Connection connection = getConnection()) {
+            if (connection.getMetaData().getColumns(null, null, "players", "bot_wins").next()) {
+                return;
+            }
+
+            try (Statement statement = connection.createStatement()) {
+                statement.execute("ALTER TABLE players ADD bot_wins INTEGER DEFAULT 0");
+                statement.execute("ALTER TABLE players ADD bot_losses INTEGER DEFAULT 0");
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.SEVERE, "Error occurred while adding bot game columns.", e);
+        }
+    }
+
     @Override
     public PlayerData getPlayer(final UUID uuid) {
-        String sql = "SELECT wins, losses, profit, total_loss, total_gambled, broadcasts FROM players WHERE uuid = ?;";
+        String sql = "SELECT wins, losses, profit, total_loss, total_gambled, broadcasts, bot_wins, bot_losses FROM players WHERE uuid = ?;";
         try (Connection playerConnection = getConnection();
              PreparedStatement preparedStatement = playerConnection.prepareStatement(sql)) {
             preparedStatement.setString(1, uuid.toString());
@@ -146,6 +168,8 @@ public class SQLiteHandler implements StorageHandler {
                     playerData.setTotalLosses(resultSet.getLong("total_loss"));
                     playerData.setTotalGambled(resultSet.getLong("total_gambled"));
                     playerData.setDisplayBroadcastMessages(resultSet.getBoolean("broadcasts"));
+                    playerData.setBotWins(resultSet.getInt("bot_wins"));
+                    playerData.setBotLosses(resultSet.getInt("bot_losses"));
 
                     return playerData;
                 }
@@ -159,7 +183,7 @@ public class SQLiteHandler implements StorageHandler {
 
     @Override
     public void savePlayer(final PlayerData player) {
-        String sql = "REPLACE INTO players (uuid, wins, losses, profit, total_loss, total_gambled, broadcasts) VALUES (?, ?, ?, ?, ?, ?, ?);";
+        String sql = "REPLACE INTO players (uuid, wins, losses, profit, total_loss, total_gambled, broadcasts, bot_wins, bot_losses) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
         try (Connection playerConnection = getConnection();
              PreparedStatement preparedStatement = playerConnection.prepareStatement(sql)) {
             preparedStatement.setString(1, player.getUUID().toString());
@@ -169,6 +193,8 @@ public class SQLiteHandler implements StorageHandler {
             preparedStatement.setLong(5, player.getTotalLosses());
             preparedStatement.setLong(6, player.getTotalGambled());
             preparedStatement.setBoolean(7, player.isDisplayBroadcastMessages());
+            preparedStatement.setInt(8, player.getBotWins());
+            preparedStatement.setInt(9, player.getBotLosses());
             preparedStatement.execute();
         } catch (SQLException e) {
             plugin.getLogger().log(Level.SEVERE, "Error occurred while attempting to save a player's data.", e);

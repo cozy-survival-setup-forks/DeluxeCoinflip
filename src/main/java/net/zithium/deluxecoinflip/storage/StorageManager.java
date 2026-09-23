@@ -83,6 +83,22 @@ public class StorageManager implements Listener {
         });
     }
 
+    public void updateOfflinePlayerBotWin(UUID uuid) {
+        scheduler.runAsync(task -> {
+            PlayerData playerData = storageHandler.getPlayer(uuid);
+            playerData.updateBotWins();
+            storageHandler.savePlayer(playerData);
+        });
+    }
+
+    public void updateOfflinePlayerBotLoss(UUID uuid) {
+        scheduler.runAsync(task -> {
+            PlayerData playerData = storageHandler.getPlayer(uuid);
+            playerData.updateBotLosses();
+            storageHandler.savePlayer(playerData);
+        });
+    }
+
     public void loadPlayerData(UUID uuid) {
         scheduler.runAsync(task -> {
             PlayerData data = storageHandler.getPlayer(uuid);

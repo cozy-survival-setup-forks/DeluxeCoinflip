@@ -32,7 +32,6 @@ import net.zithium.deluxecoinflip.storage.StorageManager;
 import net.zithium.deluxecoinflip.storage.handler.GameShutdownProvider;
 import net.zithium.deluxecoinflip.storage.handler.impl.DefaultGameShutdownProvider;
 import net.zithium.deluxecoinflip.utility.ItemStackBuilder;
-import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -48,8 +47,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public class DeluxeCoinflipPlugin extends JavaPlugin implements DeluxeCoinflipAPI {
-
-    private static final int BSTATS_PLUGIN_ID = 20887;
 
     private static PlatformScheduler scheduler;
 
@@ -97,8 +94,6 @@ public class DeluxeCoinflipPlugin extends JavaPlugin implements DeluxeCoinflipAP
         getLogger().log(Level.INFO, "/  |_     Author: " + pluginAuthor);
         getLogger().log(Level.INFO, "\\_ |      (c) Zithium Studios 2021 - 2025. All rights reserved.");
         getLogger().log(Level.INFO, "");
-
-        enableMetrics();
 
         listenerCache = CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).maximumSize(500).build();
 
@@ -168,15 +163,6 @@ public class DeluxeCoinflipPlugin extends JavaPlugin implements DeluxeCoinflipAP
         getLogger().log(Level.INFO, "");
         getLogger().log(Level.INFO, "Successfully loaded in " + loadMilliseconds + "ms");
         getLogger().log(Level.INFO, "");
-    }
-
-    private void enableMetrics() {
-        if (getConfig().getBoolean("metrics", true)) {
-            getLogger().log(Level.INFO, "Loading bStats metrics...");
-            new Metrics(this, BSTATS_PLUGIN_ID);
-        } else {
-            getLogger().log(Level.INFO, "Metrics are disabled.");
-        }
     }
 
     @Override

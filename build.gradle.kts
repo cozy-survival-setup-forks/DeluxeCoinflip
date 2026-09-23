@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "net.zithium"
-version = "2.11.3"
+version = "2.11.3-cozy.1"
 description = "DeluxeCoinflip"
 
 repositories {
@@ -24,7 +24,6 @@ repositories {
 dependencies {
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
     implementation("dev.triumphteam:triumph-gui:3.1.13")
-    implementation("org.bstats:bstats-bukkit:3.1.0")
     implementation("com.github.ItzSave:ZithiumLibrary:1f5182b77f")
     implementation("com.tcoded:FoliaLib:0.5.1")
 
@@ -41,7 +40,7 @@ dependencies {
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 tasks.compileJava {
@@ -77,6 +76,5 @@ tasks {
         relocate("dev.triumphteam.gui", "net.zithium.deluxecoinflip.libs.gui")
         relocate("net.zithium.library", "net.zithium.deluxecoinflip.libs.library")
         relocate("com.tcoded.folialib", "net.zithium.deluxecoinflip.libs.folialib")
-        relocate("org.bstats", "net.zithium.deluxecoinflip.libs.metrics") // bStats
     }
 }

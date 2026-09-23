@@ -201,7 +201,7 @@ public class GameBuilderGUI {
         GuiItem item = new GuiItem(ItemStackBuilder.getItemStack(section).build(), event -> {
             EconomyProvider provider = economyManager.getEconomyProvider(game.getProvider());
 
-            if (plugin.getGameManager().getCoinflipGames().containsKey(player.getUniqueId())) {
+            if (!game.isVsBot() && plugin.getGameManager().getCoinflipGames().containsKey(player.getUniqueId())) {
                 handleError(player, event, cfg, "gamebuilder-gui.error-game-exists");
                 return;
             }
@@ -217,6 +217,31 @@ public class GameBuilderGUI {
 
             if (amount > (long) provider.getBalance(player)) {
                 handleError(player, event, cfg, "gamebuilder-gui.error-no-funds");
+                return;
+            }
+
+            if (game.isVsBot()) {
+                // Games against the bot don't get listed/accepted, so they use the same
+                // active-game tracking a PvP game gets once accepted, as their re-entrancy guard.
+                if (plugin.getActiveGamesCache().isInGame(player.getUniqueId())) {
+                    handleError(player, event, cfg, "gamebuilder-gui.error-game-exists");
+                    return;
+                }
+
+                CoinflipCreatedEvent botCreatedEvent = new CoinflipCreatedEvent(player, game);
+                Bukkit.getPluginManager().callEvent(botCreatedEvent);
+                if (botCreatedEvent.isCancelled()) {
+                    return;
+                }
+
+                CoinflipGame botGame = game.clone();
+                plugin.getActiveGamesCache().register(botGame);
+
+                suppressReturn.add(player.getUniqueId());
+                scheduler.runAtEntity(player, task -> gui.close(player));
+
+                provider.withdraw(player, amount);
+                plugin.getInventoryManager().getBotGameGUI().startGame(player, botGame);
                 return;
             }
 

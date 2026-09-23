@@ -5,10 +5,6 @@
 # Developer API
 #   https://github.com/itzsave/DeluxeCoinflipAPI
 
-# Should the plugin report stats to https://bstats.org/
-# All usage statistics are anonymous and has zero impact on performance.
-metrics: true
-
 storage:
   # Types available:
   # - SQLITE
@@ -28,6 +24,11 @@ settings:
 
   # How much needs to be won to broadcast to everyone? Set to 0 to broadcast all winnings.
   minimum-broadcast-winnings: 1000
+
+  # Play with Bot: a solo coinflip against the house instead of another player.
+  bot:
+    win-chance: 50.0
+    payout-multiplier: 2.0
 
   tax:
     enabled: true
@@ -200,6 +201,18 @@ games-gui:
     display_name: "&a&lCreate Game"
     lore:
       - "&7Click here to create a new game!"
+  play-with-bot:
+    # A solo coinflip against the house instead of another player. No listing, resolves instantly.
+    enabled: true
+    slot: 26
+    material: GOLD_NUGGET
+    display_name: "&6&lPlay with Bot"
+    lore:
+      - "&7Flip against the house instead"
+      - "&7of waiting for another player."
+      - ""
+      - " &eTotal Games: &f{BOT_TOTAL_GAMES}"
+      - " &eWin Rate: &f{BOT_WIN_PERCENTAGE}%"
   refresh:
     # Set false to disable the refresh button
     enabled: true

@@ -43,7 +43,10 @@ public enum Messages {
     GAME_FORFEIT("coinflip.summary-forfeit"),
     GAME_REFUNDED("coinflip.refunded"),
     GAME_SUMMARY_LOSS("coinflip.summary-loss"),
-    GAME_SUMMARY_WIN("coinflip.summary-win");
+    GAME_SUMMARY_WIN("coinflip.summary-win"),
+
+    BOT_GAME_LOSS("coinflip.bot-summary-loss"),
+    BOT_GAME_WIN("coinflip.bot-summary-win");
 
     private static FileConfiguration config;
 

@@ -16,6 +16,7 @@ public class PlayerData {
     private int wins, losses;
     private long profit, totalLosses, totalGambled;
     private boolean displayBroadcastMessages;
+    private int botWins, botLosses;
 
     public PlayerData(UUID uuid, int wins, int losses, long profit, long totalLosses, long totalGambled, boolean displayBroadcastMessages) {
         this.uuid = uuid;
@@ -129,5 +130,42 @@ public class PlayerData {
 
     public void setDisplayBroadcastMessages(boolean value) {
         this.displayBroadcastMessages = value;
+    }
+
+    public int getBotWins() {
+        return botWins;
+    }
+
+    public void setBotWins(int botWins) {
+        this.botWins = botWins;
+    }
+
+    public void updateBotWins() {
+        botWins++;
+    }
+
+    public int getBotLosses() {
+        return botLosses;
+    }
+
+    public void setBotLosses(int botLosses) {
+        this.botLosses = botLosses;
+    }
+
+    public void updateBotLosses() {
+        botLosses++;
+    }
+
+    public int getBotTotalGames() {
+        return botWins + botLosses;
+    }
+
+    public double getBotWinPercentage() {
+        int total = getBotTotalGames();
+        if (total == 0) {
+            return 0.0;
+        }
+
+        return Double.parseDouble(new DecimalFormat("##.##").format(botWins * 100.0 / total));
     }
 }

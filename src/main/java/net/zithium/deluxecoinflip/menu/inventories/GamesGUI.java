@@ -222,8 +222,21 @@ public class GamesGUI {
             if (newGameSlot >= 0 && createSection != null) {
                 String initialProviderKey = economyManager.getEconomyProviders().keySet().stream().findFirst().orElse(null);
                 ItemStack newGameItem = buildItemWithPlaceholders(createSection, line -> applyPlayerStats(line, player, playerData));
-                GuiItem newGameGuiItem = getGuiItem(player, newGameItem, initialProviderKey);
+                GuiItem newGameGuiItem = getGuiItem(player, newGameItem, initialProviderKey, false);
                 gui.setItem(newGameSlot, newGameGuiItem);
+            }
+        }
+
+        if (config.getBoolean("games-gui.play-with-bot.enabled")) {
+            ConfigurationSection botSection = config.getConfigurationSection("games-gui.play-with-bot");
+            int botSlot = config.getInt("games-gui.play-with-bot.slot", -1);
+            if (botSlot >= 0 && botSection != null) {
+                String initialProviderKey = economyManager.getEconomyProviders().keySet().stream().findFirst().orElse(null);
+                ItemStack botItem = buildItemWithPlaceholders(botSection, line -> applyPlayerStats(line, player, playerData)
+                        .replace("{BOT_TOTAL_GAMES}", String.valueOf(playerData.getBotTotalGames()))
+                        .replace("{BOT_WIN_PERCENTAGE}", String.valueOf(playerData.getBotWinPercentage())));
+                GuiItem botGuiItem = getGuiItem(player, botItem, initialProviderKey, true);
+                gui.setItem(botSlot, botGuiItem);
             }
         }
 
@@ -234,7 +247,7 @@ public class GamesGUI {
         }
     }
 
-    private @NotNull GuiItem getGuiItem(Player player, ItemStack newGameItem, String initialProviderKey) {
+    private @NotNull GuiItem getGuiItem(Player player, ItemStack newGameItem, String initialProviderKey, boolean vsBot) {
         GuiItem newGameGuiItem = new GuiItem(newGameItem);
         newGameGuiItem.setAction(events -> {
             if (initialProviderKey == null) {
@@ -242,9 +255,9 @@ public class GamesGUI {
                 return;
             }
 
-            plugin.getInventoryManager()
-                    .getGameBuilderGUI()
-                    .openGameBuilderGUI(player, new CoinflipGame(player.getUniqueId(), initialProviderKey, 0));
+            CoinflipGame game = new CoinflipGame(player.getUniqueId(), initialProviderKey, 0);
+            game.setVsBot(vsBot);
+            plugin.getInventoryManager().getGameBuilderGUI().openGameBuilderGUI(player, game);
         });
 
         return newGameGuiItem;

@@ -71,6 +71,22 @@ coinflip:
     - "&eWinner: &a{WINNER}"
     - "&eLoser: &c{LOSER}"
     - ""
+
+  bot-summary-loss:
+    - ""
+    - "         &e&lGame Summary"
+    - " &cYou lost against the bot."
+    - ""
+    - "&eStake: &f${STAKE}"
+    - ""
+  bot-summary-win:
+    - ""
+    - "         &e&lGame Summary"
+    - "           &a&lWINNER"
+    - ""
+    - "&eStake: &f${STAKE}"
+    - "&eWinnings: &a${WINNINGS}"
+    - ""
   summary-forfeit:
     - ""
     - "         &e&lGame Summary"
