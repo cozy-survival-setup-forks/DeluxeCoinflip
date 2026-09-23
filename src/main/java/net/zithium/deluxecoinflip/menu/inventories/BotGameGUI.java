@@ -173,10 +173,16 @@ public class BotGameGUI {
         plugin.getActiveGamesCache().unregister(game);
 
         EconomyProvider provider = economyManager.getEconomyProvider(game.getProvider());
+        if (win && provider == null) {
+            plugin.getLogger().warning("[DeluxeCoinflip] Missing economy provider '" + game.getProvider()
+                    + "'; bot payout skipped for " + playerId + ".");
+            return;
+        }
+
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerId);
         String stakeFormatted = TextUtil.numberFormat(game.getAmount());
 
-        if (win && provider != null) {
+        if (win) {
             scheduler.runNextTick(task -> provider.deposit(offlinePlayer, payout));
         }
 
